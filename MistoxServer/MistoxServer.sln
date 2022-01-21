@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31729.503
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MistoxServer", "MistoxServer.csproj", "{947D92F0-B737-4D1D-857B-F4EAB70D6980}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CLI", "..\CLI\CLI.csproj", "{B8EA2F11-62A3-45B2-8FDC-E734FD6B87E1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{947D92F0-B737-4D1D-857B-F4EAB70D6980}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{947D92F0-B737-4D1D-857B-F4EAB70D6980}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{947D92F0-B737-4D1D-857B-F4EAB70D6980}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{947D92F0-B737-4D1D-857B-F4EAB70D6980}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8EA2F11-62A3-45B2-8FDC-E734FD6B87E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8EA2F11-62A3-45B2-8FDC-E734FD6B87E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8EA2F11-62A3-45B2-8FDC-E734FD6B87E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8EA2F11-62A3-45B2-8FDC-E734FD6B87E1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {59213D9A-3888-4C3D-9EB7-BB116FAB1EB7}
+	EndGlobalSection
+EndGlobal

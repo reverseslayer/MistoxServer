@@ -1,0 +1,15 @@
+﻿The servers default port is 25566
+
+
+TCPServer.cs
+	Void		TCPServer()						Initilizes the server object on the default game port of 25566
+	Void		SendAll(string Data)			Send data to all the clients
+	Event		onReceived						Fires when data is received from a client
+
+TCPClient.cs
+	Void		TCPClient(String ServerIP)		Initilizes the client object
+	Void		Send(String Data)				Sends data to the server
+	Event		onReceived						Fires when data is received from the server
+
+UDPClient.cs
+	
