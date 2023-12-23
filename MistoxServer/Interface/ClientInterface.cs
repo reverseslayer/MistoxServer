@@ -41,7 +41,7 @@ namespace MistoxServer {
             SlowUpdateClient.Send(data);
         }
 
-        public void SendToUser<Packet>(Guid user, Packet data) {
+        public void SendToUser<Packet>(string user, Packet data) {
             FastUpdate.SendTo(user, data);
         }
 

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using Newtonsoft.Json;
 
 //IP Range Updater
 
@@ -28,27 +27,20 @@ namespace MistoxServer.Client {
             RThread.Start();
 
             // Send Connection Request Packet
-            Send(new ConnectionRequestPacket { GUID = Guid.NewGuid(), UserName = UserName, ClientPort = ClientPort });
+            Send(new ConnectionRequestPacket { UserName = UserName, ClientPort = ClientPort });
         }
 
         public void Send<Packet>(Packet packet) {
-            NetworkStream Stream = Server.GetStream();
-            byte[] typeName = Encoding.UTF8.GetBytes(typeof(Packet).FullName);
-            byte[] typeLength = BitConverter.GetBytes(typeName.Length);
-            byte[] packetdata = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(packet));
-            byte[] length = BitConverter.GetBytes(packetdata.Length);
-            Stream.Write(typeLength, 0, 4);
-            Stream.Write(typeName, 0, typeName.Length);
-            Stream.Write(length, 0, 4);
-            Stream.Write(packetdata, 0, packetdata.Length);
+            Extensions.StreamSend( Server.GetStream(), packet );
         }
 
         void AddUser(ConnectionRequestPacket conRequest) {
             Client.Endpoints.Add(new Connection() {
                 ID = conRequest.GUID,
                 UserName = conRequest.UserName,
-                udpClient = new IPEndPoint(IPAddress.Parse(conRequest.LocalIP), conRequest.ClientPort)
+                udpClient = new IPEndPoint(IPAddress.Parse(conRequest.IPV4), conRequest.ClientPort) //unable to determine at runtime if it should use the ipv4 or ipv6
             });
+            
         }
 
         void ReceiveThread() {
@@ -65,7 +57,7 @@ namespace MistoxServer.Client {
                             int dataLength = BitConverter.ToInt32(BufferedData.Sub(typeLength + 4, 4));                                                                     // Get the data length off the packet
                             if (BufferedData.Length >= typeLength + dataLength + 8) {                                                                                       // If the whole packet has been received
                                 Type dType = Type.GetType(Encoding.UTF8.GetString(BufferedData.Sub(4, typeLength)));                                                        // Get the type of the data
-                                dynamic dData = JsonConvert.DeserializeObject(Encoding.UTF8.GetString(BufferedData.Sub(typeLength + 8, dataLength)), dType);                // Get the packet as the correct type sent
+                                dynamic dData = mSerialize.Deserialize(BufferedData.Sub(typeLength + 4, BufferedData.Length - (typeLength + 4)), dType);                    // Get the packet as the correct type sent
                                 if (dType == typeof(ConnectionRequestPacket)) {
                                     AddUser(dData);
                                     Console.WriteLine("User Added with username of [" + ((ConnectionRequestPacket)dData).UserName + "] via slowupdate");

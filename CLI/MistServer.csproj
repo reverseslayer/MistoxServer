@@ -1,8 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <StartupObject>MistoxHolePunch.Program</StartupObject>
     <PackageId>Mistox Game Server</PackageId>
     <Authors>Mistox</Authors>
@@ -19,7 +19,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MistoxServer\MistoxServer.csproj" />
+    <ProjectReference Include="..\MistoxServer\MistServerModule.csproj" />
   </ItemGroup>
 
 </Project>

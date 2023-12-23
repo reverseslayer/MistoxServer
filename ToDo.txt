@@ -1,0 +1,21 @@
+Deterministic Lockstep
+	packet needs to be most common inputs first and include un-ack input packets sent after input changed
+		round input to ints
+			magnitude in ints
+			angle rotation in ints
+			bool button pressed
+	Send inputs instead of each objects postion
+	Set each games random seed to be the same so simulation stays in sync
+	if you send at 60 times per second the result on the other end isnt spaced evenly
+		playout delay buffer
+	add an extra bit to the end of every packet. Input changed
+		ack only on input changed back to server
+
+
+Overall goal
+	Use inputs instead of object positions
+	Try to shrink packets as much as possible
+	Pack multiple inputs up to a cutoff limit into each frame so there is backup data incase frames drop max of like 2 seconds
+		packet = List<frame>{ new frame{ jump, xmove, ymove, crouch, inputChanged } }
+	only send full packet on input changed
+		

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using MistoxServer;
+using System.Runtime.InteropServices;
 
 namespace MistoxHolePunch {
     class Program {
@@ -14,7 +15,7 @@ namespace MistoxHolePunch {
                 Console.WriteLine(HelpDocumentation.HelpText);
             } else if (Task == "/s" || Task == "-s") {
                 Console.Clear();
-                serverObj = mServer.newServer();
+                serverObj = mServer.newServer();  
             } else if (Task == "/c" || Task == "-c") {
                 Console.Clear();
                 string IPAddress = args[1];
@@ -37,9 +38,11 @@ namespace MistoxHolePunch {
                 // Need to save args and then stop and start the server using old args
                 
             } else {
-                Console.WriteLine("If you need help please type MistoxHolePunch.exe /?");
+                Console.WriteLine( "If you need help please type MistServer /?" );
                 //serverObj = mServer.newClient("mistox.net", 25567, "Mistox");
                 //serverObj = mServer.newServer();
+
+                Console.WriteLine( ConnectionStatics.IPV4 );
             }
         }
 

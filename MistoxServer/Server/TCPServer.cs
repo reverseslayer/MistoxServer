@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using Newtonsoft.Json;
 
 // Client Connections
 
@@ -28,34 +27,17 @@ namespace MistoxServer.Server {
         }
 
         public void SendAll<T>(T packet) {
-            foreach (Connection cur in Clients) {
-                NetworkStream Stream = cur.tcpClient.GetStream();
-                byte[] typeName = Encoding.UTF8.GetBytes(typeof(T).FullName);
-                byte[] typeLength = BitConverter.GetBytes(typeName.Length);
-                byte[] packetdata = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(packet));
-                byte[] length = BitConverter.GetBytes(packetdata.Length);
-                Stream.Write(typeLength, 0, 4);
-                Stream.Write(typeName, 0, typeName.Length);
-                Stream.Write(length, 0, 4);
-                Stream.Write(packetdata, 0, packetdata.Length);
-            }
+            Parallel.ForEach(Clients, ( cur ) => {
+                Extensions.StreamSend( cur.tcpClient.GetStream(), packet );
+            } );
         }
 
-        public void SendTo<Packet>(Guid user, Packet packet) {
-            foreach (Connection cur in Clients) {
-                if (cur.ID == user) {
-                    NetworkStream Stream = cur.tcpClient.GetStream();
-                    byte[] typeName = Encoding.UTF8.GetBytes(typeof(Packet).FullName);
-                    byte[] typeLength = BitConverter.GetBytes(typeName.Length);
-                    byte[] packetdata = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(packet));
-                    byte[] length = BitConverter.GetBytes(packetdata.Length);
-                    Stream.Write(typeLength, 0, 4);
-                    Stream.Write(typeName, 0, typeName.Length);
-                    Stream.Write(length, 0, 4);
-                    Stream.Write(packetdata, 0, packetdata.Length);
-                    break;
+        public void SendTo<Packet>(string user, Packet packet) {
+            Parallel.ForEach( Clients, ( cur ) => {
+                if( cur.ID == user ) {
+                    Extensions.StreamSend( cur.tcpClient.GetStream(), packet );
                 }
-            }
+            } );
         }
 
         void AddUser(ConnectionRequestPacket conRequest, TcpClient tcp) {
@@ -72,7 +54,7 @@ namespace MistoxServer.Server {
             try {
                 byte[] BufferedData = new byte[0];
                 while (Alive) {
-                    byte[] StreamData = new byte[1024];
+                    byte[] StreamData = new byte[2048];
                     int bytesRead = Client.tcpClient.GetStream().Read(StreamData, 0, StreamData.Length);                                                                    // Read data off the network
                     BufferedData = BufferedData.Join(StreamData.Sub(0, bytesRead));                                                                                         // Pull the recieved data out and buffer it
                                                                                                                                                                             // [TypeLength, TypeName, DataLength, Data]
@@ -82,7 +64,7 @@ namespace MistoxServer.Server {
                             int dataLength = BitConverter.ToInt32(BufferedData.Sub(typeLength + 4, 4));                                                                     // Get the data length off the packet
                             if (BufferedData.Length >= typeLength + dataLength + 8) {                                                                                       // If the whole packet has been received
                                 Type dType = Type.GetType(Encoding.UTF8.GetString(BufferedData.Sub(4, typeLength)));                                                        // Get the type of the data
-                                dynamic dData = JsonConvert.DeserializeObject(Encoding.UTF8.GetString(BufferedData.Sub(typeLength + 8, dataLength)), dType);                // Get the packet as the correct type sent
+                                dynamic dData = mSerialize.Deserialize(BufferedData.Sub(typeLength + 8, dataLength), dType);                                                // Get the packet as the correct type sent
                                 if (dType == typeof(ConnectionRequestPacket)) {
                                     AddUser(dData, Client.tcpClient);
                                     SendAll(dData);

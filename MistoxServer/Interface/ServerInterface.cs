@@ -18,14 +18,14 @@ namespace MistoxServer {
             SlowUpdateServer.onReceived += (object packet, EventArgs e) => {
                 onReceive.Invoke(packet, e);
             };
-            Console.WriteLine("The server initilized successfully and is awaiting connections at " + new WebClient().DownloadString("https://ipv4.icanhazip.com/").TrimEnd());
+            Console.WriteLine( "The server initilized successfully and is awaiting connections at " + ConnectionStatics.IPV4 + " & " + ConnectionStatics.IPV6 );
         }
 
         public void SendToServer<Packet>(Packet data) {
             onReceive(data, new EventArgs());
         }
 
-        public void SendToUser<Packet>(Guid user, Packet data) {
+        public void SendToUser<Packet>(string user, Packet data) {
             SlowUpdateServer.SendTo(user, data);
         }
 

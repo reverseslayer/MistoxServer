@@ -6,7 +6,6 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 // Network Sync
 
@@ -40,16 +39,16 @@ namespace MistoxServer.Client {
                 byte[] packetData = _udpClient.Receive(ref _anyone);
                 int typeLength = BitConverter.ToInt32(packetData);                                                                                                      // Gets the first 4 bytes off the data and puts it into the data length int
                 Type dType = Type.GetType(Encoding.UTF8.GetString(packetData.Sub(4, typeLength)));                                                                      // Get the type of the data
-                dynamic dData = JsonConvert.DeserializeObject(Encoding.UTF8.GetString(packetData.Sub(typeLength + 4, packetData.Length - (typeLength + 4))), dType);    // Get the packet as the correct type sent
-                onReceived.Invoke(dData, new EventArgs());                                                                                                              // Split out packet and send it up
+                object x = mSerialize.Deserialize(packetData.Sub(typeLength + 4, packetData.Length - (typeLength + 4)), dType);                                         // Get the packet as the correct type sent
+                onReceived.Invoke(x, new EventArgs());                                                                                                                  // Split out packet and send it up
             }
         }
 
-        public void SendTo<Packet>(Guid User, Packet Data) {
+        public void SendTo<Packet>(string User, Packet Data) {
             foreach (Connection cur in Endpoints) {
                 if (cur.ID == User) {
                     byte[] typeName = Encoding.UTF8.GetBytes(typeof(Packet).FullName);
-                    byte[] packetData = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(Data));
+                    byte[] packetData = mSerialize.Serialize(Data);
                     byte[] typeLength = BitConverter.GetBytes(typeName.Length);
                     byte[] fullmsg = typeLength.Join(typeName).Join(packetData);
                     _udpClient.Send(fullmsg, fullmsg.Length, cur.udpClient);
@@ -62,7 +61,7 @@ namespace MistoxServer.Client {
         public void SendAll<Packet>(Packet Data) {
             foreach (Connection cur in Endpoints) {
                 byte[] typeName = Encoding.UTF8.GetBytes(typeof(Packet).FullName);
-                byte[] packetData = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(Data));
+                byte[] packetData = mSerialize.Serialize(Data);
                 byte[] typeLength = BitConverter.GetBytes(typeName.Length);
                 byte[] fullmsg = typeLength.Join(typeName).Join(packetData);
                 _udpClient.Send(fullmsg, fullmsg.Length, cur.udpClient);
